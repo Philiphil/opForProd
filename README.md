@@ -1,6 +1,6 @@
 # opForProd
-#INSTALLING  
+# INSTALLING   
 ```go get github.com/philiphil/opForProd```   
 
-#Using   
+# Using    
 ```opForProd C:\folder``` OR ```opForProd C:\file.md```   
