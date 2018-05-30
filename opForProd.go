@@ -11,6 +11,7 @@ import (
 "time"
 "runtime"
 "encoding/json"
+"html"
 )
 
 var (
@@ -21,13 +22,16 @@ _HTML string
 _PORT = "555"
 _PAGE = "IsItOpForProd"
 _PAGEDELIVERED = false
+_LINES = 0
 )
 
 
 type Line struct{
 	Content string
 	Location string
-	Index int} 
+	Index int
+	Needle string
+} 
 
 func init() {
 	_PREFIX = []string{
@@ -36,10 +40,12 @@ func init() {
 	_SUFIX = []string{
 		"", "'", "\"",
 	}
-	b, err := ioutil.ReadFile("./list.json") // just pass the file name
+	b, err := ioutil.ReadFile("./list.json")
     if err != nil {
     	fmt.Println("list.json not found")
-        return
+        _NEEDLES = []string{
+        	"à","ils","ntm","pd","fdp","enculé","batard", "connard","con","merde","putain","ptn","TODO","MEMORYLEAK", "LEAK","bordel", "enflure","shit",
+        }
     }
     json.Unmarshal(b, &_NEEDLES)
 }
@@ -74,6 +80,7 @@ func main(){
 	}
 
 	displayResult(lines)
+	fmt.Println("LOC : "+strconv.FormatInt(int64(_LINES), 10))
 }
 
 func isDirectory(path string) (bool, error) {
@@ -114,24 +121,26 @@ func readFile(loc string)(contents []Line){
   i:=1
   for scanner.Scan() {
   	s_bfr := scanner.Text();
-  	if detectNeedle(s_bfr){
-  		contents = append(contents, Line{s_bfr,loc,i})
+  	if b, n := detectNeedle(s_bfr); b{
+  		contents = append(contents, Line{html.EscapeString(s_bfr),loc,i, n})
   	}
   	i++
   }
+  _LINES +=i
   return}
 
-func detectNeedle(line string) bool{
+func detectNeedle(line string) (bool, string){
+	//stringFields
 	for _, needle := range _NEEDLES{
 		for _, pre := range _PREFIX{
 			for _, su := range _SUFIX{
 			  	if strings.Contains(line, pre+needle+su){//EqualFold
-			  		  return true
+			  		  return true, pre+needle+su
 			  	}
 			} 
 		} 
 	}
-  	return false}
+  	return false, ""}
 
 func displayBrowser(){
 	switch runtime.GOOS {
@@ -158,7 +167,7 @@ func formateHTMl(lines []Line){
 	}
 
 	for _, f := range lines{
-		_HTML+= "<p>"+f.Location +":"+ strconv.FormatInt(int64(f.Index), 10)+ "</p>"
+		_HTML+= "<p>"+f.Location +":"+ strconv.FormatInt(int64(f.Index), 10)+ ":"+f.Needle+"</p>"
 		_HTML+= "<p style='color:lightcoral'>"+f.Content + "</p><br>"
 	}
 	_HTML+= "</div>"
