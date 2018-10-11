@@ -6,6 +6,7 @@ import (
 "io/ioutil"
 "bufio"
 "strings"
+//"path/filepath"
 "net/http"
 "strconv"
 "time"
@@ -58,8 +59,12 @@ func main(){
 
 
 	if len(os.Args) < 2  {
-		fmt.Println( "NO ARGS" )
-		return 
+		pwd, err := os.Getwd()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		arg = pwd
 	}else{
 		arg = os.Args[1]
 	}
