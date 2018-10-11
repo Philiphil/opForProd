@@ -1,31 +1,29 @@
 package main
 import (
-"os"
-"os/exec"
-"fmt"
-"io/ioutil"
-"bufio"
-"strings"
-//"path/filepath"
-"net/http"
-"strconv"
-"time"
-"runtime"
-"encoding/json"
-"html"
+	"os"
+	"os/exec"
+	"fmt"
+	"io/ioutil"
+	"bufio"
+	"strings"
+	"net/http"
+	"strconv"
+	"time"
+	"runtime"
+	"encoding/json"
+	"html"
 )
 
 var (
-_NEEDLES []string
-_PREFIX []string
-_SUFIX []string
-_HTML string
-_PORT = "555"
-_PAGE = "IsItOpForProd"
-_PAGEDELIVERED = false
-_LINES = 0
+	_NEEDLES []string
+	_PREFIX []string
+	_SUFIX []string
+	_HTML string
+	_PORT = "555"
+	_PAGE = "IsItOpForProd"
+	_PAGEDELIVERED = false
+	_LINES = 0
 )
-
 
 type Line struct{
 	Content string
@@ -56,7 +54,6 @@ func main(){
 	arg := "";
 	var files []string;
 	var lines []Line;
-
 
 	if len(os.Args) < 2  {
 		pwd, err := os.Getwd()
@@ -115,7 +112,8 @@ func explore(loc string)(contents []string){
          		contents = append(contents , str )
          	}
     }
-   return}
+   return
+}
 
 func readFile(loc string)(contents []Line){
  file, _ := os.Open(loc)
@@ -132,7 +130,8 @@ func readFile(loc string)(contents []Line){
   	i++
   }
   _LINES +=i
-  return}
+  return
+}
 
 func detectNeedle(line string) (bool, string){
 	//stringFields
@@ -145,7 +144,8 @@ func detectNeedle(line string) (bool, string){
 			} 
 		} 
 	}
-  	return false, ""}
+	  return false, ""
+}
 
 func displayBrowser(){
 	switch runtime.GOOS {
@@ -155,7 +155,8 @@ func displayBrowser(){
 	    exec.Command("open", "http://localhost:"+_PORT+"/"+_PAGE+"/").Start()
 	 case "windows":
 	 	exec.Command(`C:\Windows\System32\rundll32.exe`, "url.dll,FileProtocolHandler", "http://localhost:"+_PORT+"/"+_PAGE+"/").Start()
-	}}
+	}
+}
 
 func handleWebServer(){
 	http.HandleFunc("/"+_PAGE+"/", servResult)
@@ -182,7 +183,6 @@ func servResult(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, _HTML)
     _PAGEDELIVERED=true
 }
-
 
 func displayResult(lines []Line){
 	formateHTMl(lines)
